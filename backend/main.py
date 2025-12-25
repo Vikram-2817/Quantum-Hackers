@@ -1,7 +1,7 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import PyPDF2
+from fastapi import FastAPI, UploadFile, File # pyright: ignore[reportMissingImports]
+from fastapi.middleware.cors import CORSMiddleware # pyright: ignore[reportMissingImports]
+from pydantic import BaseModel # pyright: ignore[reportMissingImports]
+import PyPDF2 # pyright: ignore[reportMissingImports]
 import io
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -52,6 +52,12 @@ async def upload_document(file: UploadFile = File(...)):
         documents.append(text)
         page_map.append(page_no)
 
+    documents = [d.strip() for d in documents if d.strip()]
+
+    if not documents:
+        return {
+            "error": "No readable text found in document. " "This PDF may be scanned or image-based."
+        }
     doc_vectors = vectorizer.fit_transform(documents)
 
     return {
